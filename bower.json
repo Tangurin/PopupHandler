@@ -1,0 +1,21 @@
+{
+  "name": "PopupHandler",
+  "main": "PopupHandler.js",
+  "homepage": "https://github.com/Tangurin/PopupHandler",
+  "authors": [
+    "Albert <albert@engvie.se>"
+  ],
+  "description": "JavaScript Class for easy popup handling",
+  "keywords": [
+    "Popup",
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
