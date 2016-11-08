@@ -48,7 +48,7 @@ var PopupHandler = {
         this.closeExisting();
         if (this.appendTo.length == 0) return this.log('Could not append the given selector.');
 
-        this.popup = $('<div id="'+ this.options.id +'" class="popupHandler '+ this.options.extraClass +'" style="display: none;"><div class="popContent"></div><a class="closeBtn"><i class="fa"></i></a></div>');
+        this.popup = $('<div id="'+ this.options.id +'" class="popupHandler '+ this.options.extraClass +'" style="display: none;"><div class="popupContent"></div><a class="closeBtn"><i class="fa"></i></a></div>');
         this.addContent(content);
         this.appendTo.append(this.popup);
 
@@ -71,7 +71,7 @@ var PopupHandler = {
     },
     addContent: function(html) {
         if (typeof html == 'string') {
-            $('.popContent', this.popup).html(html);
+            $('.popupContent', this.popup).html(html);
         }
     },
     show: function() {
