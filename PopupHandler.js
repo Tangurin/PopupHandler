@@ -76,27 +76,27 @@ var PopupHandler = {
     },
     show: function() {
         if (!PopupHandler.popExists()) return false;
-        PopupHandler.callbacks.beforeShow();
+        PopupHandler.callbacks.beforeRender();
 
         OverlayHandler.hideLoading();
 
         PopupHandler.overlay('show');
 
         PopupHandler.popup.fadeIn(400, function() {
-            PopupHandler.callbacks.afterShow();
+            PopupHandler.callbacks.afterRender();
         });
         PopupHandler.popup.addClass('opened');
     },
     hide: function() {
         if (!PopupHandler.popExists()) return false;
 
-        PopupHandler.callbacks.beforeHide();
+        PopupHandler.callbacks.beforeRender();
         
         PopupHandler.overlay('hide');
 
         PopupHandler.popup.fadeIn(400, function() {
             PopupHandler.popup.remove();
-            PopupHandler.callbacks.afterHide();
+            PopupHandler.callbacks.afterRender();
         });
         PopupHandler.popup.removeClass('opened');
     },
@@ -139,24 +139,24 @@ var PopupHandler = {
         return false;
     },
     callbacks: {
-        beforeShow: function() {
-            if (typeof PopupHandler.options.beforeShow == 'function') {
-                PopupHandler.options.beforeShow();
+        beforeRender: function() {
+            if (typeof PopupHandler.options.beforeRender == 'function') {
+                PopupHandler.options.beforeRender();
             }
         },
-        afterShow: function() {
-            if (typeof PopupHandler.options.afterShow == 'function') {
-                PopupHandler.options.afterShow();
+        afterRender: function() {
+            if (typeof PopupHandler.options.afterRender == 'function') {
+                PopupHandler.options.afterRender();
             }
         },
-        beforeHide: function() {
-            if (typeof PopupHandler.options.beforeHide == 'function') {
-                PopupHandler.options.beforeHide();
+        beforeRender: function() {
+            if (typeof PopupHandler.options.beforeRender == 'function') {
+                PopupHandler.options.beforeRender();
             }
         },
-        afterHide: function() {
-            if (typeof PopupHandler.options.afterHide == 'function') {
-                PopupHandler.options.afterHide();
+        afterRender: function() {
+            if (typeof PopupHandler.options.afterRender == 'function') {
+                PopupHandler.options.afterRender();
             }
         },
     },
