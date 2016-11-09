@@ -62,7 +62,7 @@ var PopupHandler = {
             $(document).on('keyup', function(e) {
                  if (e.keyCode == 27) {
                     $(this).unbind('keyup');
-                    PopupHandler.hide();
+                    PopupHandler.close();
                 }
             });
         });
@@ -87,22 +87,24 @@ var PopupHandler = {
         });
         PopupHandler.popup.addClass('opened');
     },
-    hide: function() {
+    hide: function(callback) {
         if (!PopupHandler.popExists()) return false;
 
         PopupHandler.callbacks.beforeHide();
         
         PopupHandler.overlay('hide');
-
-        PopupHandler.popup.fadeIn(400, function() {
+        console.log('nu');
+        PopupHandler.popup.fadeOut(400, function() {
             PopupHandler.popup.remove();
             PopupHandler.callbacks.afterHide();
+            if (typeof callback == 'function') {
+                callback();
+            }
         });
-        PopupHandler.popup.removeClass('opened');
     },
     //Alias
-    close: function() { 
-        PopupHandler.hide();
+    close: function(callback) { 
+        PopupHandler.hide(callback);
     },
     overlay: function(action) {
         var action = action || 'show';
@@ -162,10 +164,7 @@ var PopupHandler = {
     },
     closeExisting: function(callback) {
         if ($('.popupHandler').length > 0) {
-            $('.popupHandler').fadeOut(500, function() {
-                $(this).remove();
-                callback();
-            });
+            PopupHandler.close(callback);
             return true;
         }
 
