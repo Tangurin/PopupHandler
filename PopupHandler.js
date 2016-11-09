@@ -90,13 +90,13 @@ var PopupHandler = {
     hide: function() {
         if (!PopupHandler.popExists()) return false;
 
-        PopupHandler.callbacks.beforeRender();
+        PopupHandler.callbacks.beforeHide();
         
         PopupHandler.overlay('hide');
 
         PopupHandler.popup.fadeIn(400, function() {
             PopupHandler.popup.remove();
-            PopupHandler.callbacks.afterRender();
+            PopupHandler.callbacks.afterHide();
         });
         PopupHandler.popup.removeClass('opened');
     },
@@ -149,14 +149,14 @@ var PopupHandler = {
                 PopupHandler.options.afterRender();
             }
         },
-        beforeRender: function() {
-            if (typeof PopupHandler.options.beforeRender == 'function') {
-                PopupHandler.options.beforeRender();
+        beforeHide: function() {
+            if (typeof PopupHandler.options.beforeHide == 'function') {
+                PopupHandler.options.beforeHide();
             }
         },
-        afterRender: function() {
-            if (typeof PopupHandler.options.afterRender == 'function') {
-                PopupHandler.options.afterRender();
+        afterHide: function() {
+            if (typeof PopupHandler.options.afterHide == 'function') {
+                PopupHandler.options.afterHide();
             }
         },
     },
