@@ -93,7 +93,6 @@ var PopupHandler = {
         PopupHandler.callbacks.beforeHide();
         
         PopupHandler.overlay('hide');
-        console.log('nu');
         PopupHandler.popup.fadeOut(400, function() {
             PopupHandler.popup.remove();
             PopupHandler.callbacks.afterHide();
