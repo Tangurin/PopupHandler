@@ -43,64 +43,62 @@ var PopupHandler = {
     appendTo: null,
     popup: null,
     create: function(content, newOptions) {
-        var self = PopupHandler;
-        this.prepareData(newOptions);
-        this.closeExisting();
-        if (this.appendTo.length == 0) return this.log('Could not append the given selector.');
+        PopupHandler.prepareData(newOptions);
+        if (PopupHandler.appendTo.length == 0) return PopupHandler.log('Could not append the given selector.');
+        
+        PopupHandler.closeExisting(function() {
+            PopupHandler.popup = $('<div id="'+ PopupHandler.options.id +'" class="popupHandler '+ PopupHandler.options.extraClass +'" style="display: none;"><div class="popupContent"></div><a class="closeBtn"><i class="fa"></i></a></div>');
+            PopupHandler.addContent(content);
+            PopupHandler.appendTo.append(PopupHandler.popup);
 
-        this.popup = $('<div id="'+ this.options.id +'" class="popupHandler '+ this.options.extraClass +'" style="display: none;"><div class="popupContent"></div><a class="closeBtn"><i class="fa"></i></a></div>');
-        this.addContent(content);
-        this.appendTo.append(this.popup);
-
-        if (this.options.autoPop) {
-            this.show();
-        }
-
-        $('> .closeBtn', this.popup).on('click', $.proxy(self.hide, self));
-        OverlayHandler.getSelector().on('click', $.proxy(self.hide, self));
-
-        //On Escape key triggered
-        $(document).on('keyup', function(e) {
-             if (e.keyCode == 27) {
-                $(this).unbind('keyup');
-                self.hide();
+            if (PopupHandler.options.autoPop) {
+                PopupHandler.show();
             }
+
+            $('> .closeBtn', PopupHandler.popup).on('click', $.proxy(PopupHandler.hide, PopupHandler));
+            OverlayHandler.getSelector().on('click', $.proxy(PopupHandler.hide, PopupHandler));
+
+            //On Escape key triggered
+            $(document).on('keyup', function(e) {
+                 if (e.keyCode == 27) {
+                    $(this).unbind('keyup');
+                    PopupHandler.hide();
+                }
+            });
         });
 
-        return self;
+        return PopupHandler;
     },
     addContent: function(html) {
         if (typeof html == 'string') {
-            $('.popupContent', this.popup).html(html);
+            $('.popupContent', PopupHandler.popup).html(html);
         }
     },
     show: function() {
-        var self = PopupHandler;
-        if (!this.popExists()) return false;
-        self.callbacks.beforeShow();
+        if (!PopupHandler.popExists()) return false;
+        PopupHandler.callbacks.beforeShow();
 
         OverlayHandler.hideLoading();
 
-        self.overlay('show');
+        PopupHandler.overlay('show');
 
-        this.popup.fadeIn(400, function() {
-            self.callbacks.afterShow();
+        PopupHandler.popup.fadeIn(400, function() {
+            PopupHandler.callbacks.afterShow();
         });
-        this.popup.addClass('opened');
+        PopupHandler.popup.addClass('opened');
     },
     hide: function() {
-        var self = PopupHandler;
-        if (!this.popExists()) return false;
+        if (!PopupHandler.popExists()) return false;
 
-        self.callbacks.beforeHide();
+        PopupHandler.callbacks.beforeHide();
         
-        self.overlay('hide');
+        PopupHandler.overlay('hide');
 
-        this.popup.fadeIn(400, function() {
-            self.popup.remove();
-            self.callbacks.afterHide();
+        PopupHandler.popup.fadeIn(400, function() {
+            PopupHandler.popup.remove();
+            PopupHandler.callbacks.afterHide();
         });
-        this.popup.removeClass('opened');
+        PopupHandler.popup.removeClass('opened');
     },
     //Alias
     close: function() { 
@@ -117,65 +115,65 @@ var PopupHandler = {
         }
     },
     prepareData: function(newOptions) {
-        this.options = this.defaults;
+        PopupHandler.options = PopupHandler.defaults;
         if (typeof newOptions == 'object') {
-            this.options = $.extend({}, this.defaults, newOptions || {});
+            PopupHandler.options = $.extend({}, PopupHandler.defaults, newOptions || {});
         }
 
-        this.appendTo = this.options.appendTo;
-        if (typeof this.appendTo == 'string') {
-            this.appendTo = $(this.options.appendTo);
+        PopupHandler.appendTo = PopupHandler.options.appendTo;
+        if (typeof PopupHandler.appendTo == 'string') {
+            PopupHandler.appendTo = $(PopupHandler.options.appendTo);
         }
     },
-    getPop: function() {
-        if (this.popExists()) {
-            return this.popup;
+    getPopup: function() {
+        if (PopupHandler.popExists()) {
+            return PopupHandler.popup;
         }
 
         return false;
     },
     popExists: function() {
-        if (typeof this.popup != 'undefined' && this.popup.length > 0) {
+        if (typeof PopupHandler.popup != 'undefined' && PopupHandler.popup.length > 0) {
             return true;
         }
         return false;
     },
     callbacks: {
         beforeShow: function() {
-            var self = PopupHandler;
-            if (typeof self.options.beforeShow == 'function') {
-                self.options.beforeShow();
+            if (typeof PopupHandler.options.beforeShow == 'function') {
+                PopupHandler.options.beforeShow();
             }
         },
         afterShow: function() {
-            var self = PopupHandler;
-            if (typeof self.options.afterShow == 'function') {
-                self.options.afterShow();
+            if (typeof PopupHandler.options.afterShow == 'function') {
+                PopupHandler.options.afterShow();
             }
         },
         beforeHide: function() {
-            var self = PopupHandler;
-            if (typeof self.options.beforeHide == 'function') {
-                self.options.beforeHide();
+            if (typeof PopupHandler.options.beforeHide == 'function') {
+                PopupHandler.options.beforeHide();
             }
         },
         afterHide: function() {
-            var self = PopupHandler;
-            if (typeof self.options.afterHide == 'function') {
-                self.options.afterHide();
+            if (typeof PopupHandler.options.afterHide == 'function') {
+                PopupHandler.options.afterHide();
             }
         },
     },
-    closeExisting: function() {
+    closeExisting: function(callback) {
         if ($('.popupHandler').length > 0) {
             $('.popupHandler').fadeOut(500, function() {
                 $(this).remove();
+                callback();
             });
+            return true;
         }
+
+        callback();
     },
     log: function(log, returnValue) {
         var returnValue = returnValue || false;
-        if (this.debug) {
+        if (PopupHandler.debug) {
             console.log(log);
         }
 
