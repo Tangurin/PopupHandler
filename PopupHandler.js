@@ -142,12 +142,12 @@ var PopupHandler = {
     callbacks: {
         beforeRender: function() {
             if (typeof PopupHandler.options.beforeRender == 'function') {
-                PopupHandler.options.beforeRender();
+                PopupHandler.options.beforeRender(PopupHandler.popup);
             }
         },
         afterRender: function() {
             if (typeof PopupHandler.options.afterRender == 'function') {
-                PopupHandler.options.afterRender();
+                PopupHandler.options.afterRender(PopupHandler.popup);
             }
         },
         beforeHide: function() {
