@@ -9,6 +9,9 @@
   "keywords": [
     "Popup"
   ],
+  "dependencies": {
+      "OverlayHandler": "https://github.com/Tangurin/OverlayHandler.git"
+  },
   "license": "MIT",
   "private": true,
   "ignore": [
