@@ -3,39 +3,6 @@
     /*===========================
     PopupHandler
     ===========================*/
-    var OverlayHandler = {
-        selector: null,
-        construct: function() {
-            if (this.selector == null) {
-                this.selector = $('#overlay');
-            }
-        },
-        show: function(loading) {
-            var loading = loading || false;
-            this.construct();
-            this.selector.addClass('active');
-            if (loading) {
-                this.selector.addClass('loading');
-            }
-        },
-        hide: function() {
-            this.construct();
-            this.selector.removeClass('active loading');
-        },
-        showLoading: function() {
-            this.construct();
-            this.selector.addClass('loading');
-        },
-        hideLoading: function() {
-            this.construct();
-            this.selector.removeClass('loading');
-        },
-        getSelector: function() {
-            this.construct();
-            return this.selector;
-        }
-    };
-
     var PopupHandler = {
         debug: false,
         defaults: {
