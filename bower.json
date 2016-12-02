@@ -10,7 +10,8 @@
     "Popup"
   ],
   "dependencies": {
-      "OverlayHandler": "https://github.com/Tangurin/OverlayHandler.git"
+    "jquery": ">=1.7.1",
+    "OverlayHandler": "https://github.com/Tangurin/OverlayHandler.git"
   },
   "license": "MIT",
   "private": true,
