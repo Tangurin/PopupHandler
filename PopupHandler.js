@@ -4,142 +4,160 @@
     PopupHandler
     ===========================*/
     var PopupHandler = {
-        debug: false,
-        defaults: {
+        element: null,
+        defaultOptions: {
             id: 'popupHandler',
             appendTo: 'body',
             extraClass: '',
-            autoPop: true,
+            show: true,
+            destroyOnClose: true,
+            overlay: true,
+            callbacks: {
+                beforeVisible: null,
+                afterVisible: null,
+                beforeHidden: null,
+                afterHidden: null,
+            }
         },
         options: {},
-        appendTo: null,
-        popup: null,
-        create: function(content, newOptions) {
-            PopupHandler.prepareData(newOptions);
-            if (PopupHandler.appendTo.length == 0) return PopupHandler.log('Could not append the given selector.');
-            
-            PopupHandler.closeExisting(function() {
-                PopupHandler.popup = $('<div id="'+ PopupHandler.options.id +'" class="popupHandler '+ PopupHandler.options.extraClass +'" style="display: none;"><div class="popupContent"></div><a class="closeBtn"><i class="fa"></i></a></div>');
-                PopupHandler.addContent(content);
-                PopupHandler.appendTo.append(PopupHandler.popup);
+        debug: false,
+        create: function(content, customOptions) {
+            //Set options
+            var customOptions = customOptions || {};
+            var options = $.extend({}, PopupHandler.defaultOptions, customOptions);
+            options.appendTo = PopupHandler.validateAppendTo(options.appendTo);
+            PopupHandler.options = options;
 
-                if (PopupHandler.options.autoPop) {
+            //Destroy existing popup before creating a new one
+            PopupHandler.destroy(function() {
+                var html = '';
+                html += '<div id="'+ options.id +'" class="popupHandler '+ options.extraClass +'" style="display: none;">';
+                    html += '<div class="popupContent"></div>';
+                    html += '<a class="closeBtn"><i class="fa"></i></a>';
+                html += '</div>';
+
+                //Store the empty popup holder element
+                PopupHandler.element = $(html);
+
+                //Add content to the popup
+                PopupHandler.addContent(content);
+
+                //Append the popup to the DOM
+                options.appendTo.append(PopupHandler.element);
+
+                //If the popup will be visible as default
+                if (options.show) {
                     PopupHandler.show();
                 }
 
-                $('> .closeBtn', PopupHandler.popup).on('click', $.proxy(PopupHandler.hide, PopupHandler));
-                OverlayHandler.getSelector().on('click', $.proxy(PopupHandler.hide, PopupHandler));
-
-                //On Escape key triggered
-                $(document).on('keyup', function(e) {
-                     if (e.keyCode == 27) {
-                        $(this).unbind('keyup');
-                        PopupHandler.close();
-                    }
+                //If Overlay is closing
+                OverlayHandler.onClose(function() {
+                    PopupHandler.closeTriggered();
                 });
+
+                //If popup close button is triggered
+                $('> .closeBtn', PopupHandler.element).on('click', PopupHandler.closeTriggered);
             });
 
             return PopupHandler;
         },
-        addContent: function(html) {
-            if (typeof html == 'string') {
-                $('.popupContent', PopupHandler.popup).html(html);
-            }
-        },
-        show: function() {
-            if (!PopupHandler.popExists()) return false;
-            PopupHandler.callbacks.beforeRender();
-
-            OverlayHandler.hideLoading();
-
-            PopupHandler.overlay('show');
-
-            PopupHandler.popup.fadeIn(400, function() {
-                PopupHandler.callbacks.afterRender();
-            });
-            PopupHandler.popup.addClass('opened');
-        },
-        hide: function(callback) {
-            if (!PopupHandler.popExists()) return false;
-
-            PopupHandler.callbacks.beforeHide();
-            
-            PopupHandler.overlay('hide');
-            PopupHandler.popup.fadeOut(400, function() {
-                PopupHandler.popup.remove();
-                PopupHandler.callbacks.afterHide();
+        destroy: function(callback) {
+            if (PopupHandler.popupExists() === false) {
                 if (typeof callback == 'function') {
                     callback();
                 }
+                return false;
+            }
+            PopupHandler.element.remove();
+            PopupHandler.element = null;
+            PopupHandler.options = {};
+            if (typeof callback == 'function') {
+                callback();
+            }
+        },
+        show: function() {
+            if (PopupHandler.popupExists() === false) {
+                return false;
+            }
+            var options = PopupHandler.options;
+            var element = PopupHandler.element;
+
+            PopupHandler.runCallback('beforeVisible');
+
+            if (options.overlay) {
+                OverlayHandler.show();
+            }
+
+            //Hide loader if there is one activated
+            OverlayHandler.hideLoader();
+
+            element.fadeIn(400, function() {
+                PopupHandler.runCallback('afterVisible');
+            }).addClass('opened');
+        },
+        hide: function(callback) {
+            var element = PopupHandler.element;
+            if (PopupHandler.popupExists() === false) {
+                if (typeof callback == 'function') {
+                    callback(element);
+                }
+                return false;
+            }
+
+            PopupHandler.runCallback('beforeHidden');
+
+            OverlayHandler.hide();
+
+            element.fadeOut(400, function() {
+                PopupHandler.runCallback('afterHidden');
+                if (typeof callback == 'function') {
+                    callback(element);
+                }
             });
         },
-        //Alias
-        close: function(callback) { 
-            PopupHandler.hide(callback);
+        closeTriggered: function() {
+            if (PopupHandler.options.destroyOnClose) {
+                PopupHandler.hide(function() {
+                    PopupHandler.destroy();
+                });
+                return true;
+            }
+            PopupHandler.hide();
         },
-        overlay: function(action) {
-            var action = action || 'show';
-            if (typeof OverlayHandler == 'undefined') return false;
-
-            if (action == 'show') {
-                OverlayHandler.show();
-            } else {
-                OverlayHandler.hide();
+        addContent: function(content) {
+            if (typeof content == 'string') {
+                $('.popupContent', PopupHandler.element).html(content);
             }
         },
-        prepareData: function(newOptions) {
-            PopupHandler.options = PopupHandler.defaults;
-            if (typeof newOptions == 'object') {
-                PopupHandler.options = $.extend({}, PopupHandler.defaults, newOptions || {});
-            }
-
-            PopupHandler.appendTo = PopupHandler.options.appendTo;
-            if (typeof PopupHandler.appendTo == 'string') {
-                PopupHandler.appendTo = $(PopupHandler.options.appendTo);
+        runCallback: function(method) {
+            var callbacks = PopupHandler.options.callbacks;
+            if (typeof callbacks[method] == 'function') {
+                callbacks[method](PopupHandler.element);
             }
         },
-        getPopup: function() {
-            if (PopupHandler.popExists()) {
-                return PopupHandler.popup;
-            }
-
-            return false;
-        },
-        popExists: function() {
-            if (typeof PopupHandler.popup != 'undefined' && PopupHandler.popup.length > 0) {
+        popupExists: function() {
+            var element = PopupHandler.element;
+            if (element != null && element.length > 0) {
                 return true;
             }
             return false;
         },
-        callbacks: {
-            beforeRender: function() {
-                if (typeof PopupHandler.options.beforeRender == 'function') {
-                    PopupHandler.options.beforeRender(PopupHandler.popup);
-                }
-            },
-            afterRender: function() {
-                if (typeof PopupHandler.options.afterRender == 'function') {
-                    PopupHandler.options.afterRender(PopupHandler.popup);
-                }
-            },
-            beforeHide: function() {
-                if (typeof PopupHandler.options.beforeHide == 'function') {
-                    PopupHandler.options.beforeHide();
-                }
-            },
-            afterHide: function() {
-                if (typeof PopupHandler.options.afterHide == 'function') {
-                    PopupHandler.options.afterHide();
-                }
-            },
+        getElement: function() {
+            return PopupHandler.element;
         },
-        closeExisting: function(callback) {
-            if ($('.popupHandler').length > 0) {
-                PopupHandler.close(callback);
-                return true;
+        validateAppendTo: function(value) {
+            if (value instanceof jQuery) {
+                return value;
             }
 
-            callback();
+            var $object = false;
+            if (typeof value == 'string') {
+                $object = $(value);
+                if ($object.length > 0) {
+                    return $object;
+                }
+            }
+            return $(body);
         },
         log: function(log, returnValue) {
             var returnValue = returnValue || false;
@@ -149,7 +167,7 @@
 
             return returnValue;
         }
-    };
+    }
 
     window.PopupHandler = PopupHandler;
 })();
