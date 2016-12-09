@@ -22,14 +22,14 @@
         options: {},
         debug: false,
         create: function(content, customOptions) {
-            //Set options
             var customOptions = customOptions || {};
             var options = $.extend({}, PopupHandler.defaultOptions, customOptions);
             options.appendTo = PopupHandler.validateAppendTo(options.appendTo);
-            PopupHandler.options = options;
-
             //Destroy existing popup before creating a new one
             PopupHandler.destroy(function() {
+                //Set options
+                PopupHandler.options = options;
+
                 var html = '';
                 html += '<div id="'+ options.id +'" class="popupHandler '+ options.extraClass +'" style="display: none;">';
                     html += '<div class="popupContent"></div>';
