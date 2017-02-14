@@ -23,10 +23,10 @@
         debug: false,
         create: function(content, customOptions) {
             var customOptions = customOptions || {};
-            var options = $.extend({}, PopupHandler.defaultOptions, customOptions);
-            options.appendTo = PopupHandler.validateAppendTo(options.appendTo);
             //Destroy existing popup before creating a new one
             PopupHandler.destroy(function() {
+                var options = $.extend({}, PopupHandler.defaultOptions, customOptions);
+                options.appendTo = PopupHandler.validateAppendTo(options.appendTo);
                 //Set options
                 PopupHandler.options = options;
 
@@ -70,7 +70,7 @@
             }
             PopupHandler.element.remove();
             PopupHandler.element = null;
-            PopupHandler.options = {};
+            PopupHandler.options = PopupHandler.defaultOptions;
             if (typeof callback == 'function') {
                 callback();
             }
@@ -131,7 +131,7 @@
         },
         runCallback: function(method) {
             var callbacks = PopupHandler.options.callbacks;
-            if (typeof callbacks[method] == 'function') {
+            if (typeof callbacks != 'undefined' && typeof callbacks[method] == 'function') {
                 callbacks[method](PopupHandler.element);
             }
         },
