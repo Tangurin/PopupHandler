@@ -23,6 +23,7 @@
         debug: false,
         create: function(content, customOptions) {
             var customOptions = customOptions || {};
+            customOptions = typeof customOptions == 'string' ? {class: customOptions} : customOptions;
             //Destroy existing popup before creating a new one
             PopupHandler.destroy(function() {
                 var options = $.extend({}, PopupHandler.defaultOptions, customOptions);
