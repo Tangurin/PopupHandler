@@ -8,7 +8,7 @@
         defaultOptions: {
             id: 'popupHandler',
             appendTo: 'body',
-            extraClass: '',
+            class: '',
             show: true,
             destroyOnClose: true,
             overlay: true,
@@ -31,7 +31,7 @@
                 PopupHandler.options = options;
 
                 var html = '';
-                html += '<div id="'+ options.id +'" class="popupHandler '+ options.extraClass +'" style="display: none;">';
+                html += '<div id="'+ options.id +'" class="popupHandler '+ options.class +'" style="display: none;">';
                     html += '<div class="popupContent"></div>';
                     html += '<a class="closeBtn"><i class="fa"></i></a>';
                 html += '</div>';
