@@ -13,6 +13,10 @@
     "jquery": ">=1.7.1",
     "OverlayHandler": "https://github.com/Tangurin/OverlayHandler.git"
   },
+  "main": [
+    "PopupHandler.js",
+    "PopupHandler.css"
+  ],
   "license": "MIT",
   "private": true,
   "ignore": [
