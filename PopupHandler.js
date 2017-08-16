@@ -63,17 +63,13 @@
         },
         destroy: function(callback) {
             if (PopupHandler.popupExists() === false) {
-                if (typeof callback == 'function') {
-                    callback();
-                }
+                PopupHandler.runCallback(callback);
                 return false;
             }
             PopupHandler.element.remove();
             PopupHandler.element = null;
             PopupHandler.options = PopupHandler.defaultOptions;
-            if (typeof callback == 'function') {
-                callback();
-            }
+            PopupHandler.runCallback(callback);
         },
         show: function() {
             if (PopupHandler.popupExists() === false) {
@@ -98,9 +94,7 @@
         hide: function(callback) {
             var element = PopupHandler.element;
             if (PopupHandler.popupExists() === false) {
-                if (typeof callback == 'function') {
-                    callback(element);
-                }
+                PopupHandler.runCallback(callback, element);
                 return false;
             }
 
@@ -110,9 +104,7 @@
 
             element.fadeOut(400, function() {
                 PopupHandler.runCallback('afterHidden');
-                if (typeof callback == 'function') {
-                    callback(element);
-                }
+                PopupHandler.runCallback(callback, element);
             });
         },
         closeTriggered: function() {
@@ -127,12 +119,6 @@
         addContent: function(content) {
             if (typeof content == 'string') {
                 $('.popupContent', PopupHandler.element).html(content);
-            }
-        },
-        runCallback: function(method) {
-            var callbacks = PopupHandler.options.callbacks;
-            if (typeof callbacks != 'undefined' && typeof callbacks[method] == 'function') {
-                callbacks[method](PopupHandler.element);
             }
         },
         popupExists: function() {
@@ -158,6 +144,22 @@
                 }
             }
             return $(body);
+        },
+        runCallback: function() {
+            var args = arguments;
+            var callback = args[0];
+            callback = typeof callback == 'string' ? PopupHandler.options.callbacks[callback] : callback;
+            if (typeof callback == 'function') {
+                var filteredArgs = [];
+                for (var i in args) {
+                    if (i > 0)  {
+                        filteredArgs.push(args[i]);
+                    }
+                }
+                PopupHandler.log('Callback: '+ callback.name +' was called with the arguments: ', filteredArgs);
+                return callback.apply(null, filteredArgs);
+            }
+            return false;
         },
         log: function(log, returnValue) {
             var returnValue = returnValue || false;
