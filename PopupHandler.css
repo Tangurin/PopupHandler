@@ -1,5 +1,4 @@
 #popupHandler {
-  transition: transform 0.3s;
   position: fixed;
   top: 50%;
   left: 50%;
@@ -10,11 +9,14 @@
   background: #fff;
   border: 1px solid #ccc;
   border-radius: 5px;
-  z-index: 1002; }
+  z-index: 1002;
+}
 #popupHandler.opened {
-  transform: translate(-50%, -50%) scale(1); }
+  transform: translate(-50%, -50%) scale(1);
+}
 #popupHandler .popupContent {
-  padding: 30px 20px 20px 20px; }
+  padding: 30px 20px 20px 20px;
+}
 #popupHandler > .closeBtn {
   position: absolute;
   top: 12px;
@@ -22,8 +24,11 @@
   font-size: 20px;
   background: #fff;
   color: #777;
-  cursor: pointer; }
+  cursor: pointer;
+}
 #popupHandler > .closeBtn .fa:before {
-  content: '\f00d'; }
+  content: '\f00d';
+}
 #popupHandler > .closeBtn:hover {
-  opacity: 0.5; }
+  opacity: 0.5;
+}
